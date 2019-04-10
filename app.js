@@ -38,8 +38,8 @@ async function memoizeImageList(urls) {
 }
 
 function disableFields(val) {
-  uploadField.setAttribute("disabled", val);
-  submitButton.setAttribute("disabled", val);
+  uploadField.disabled = val;
+  submitButton.disabled = val;
 }
 
 async function uploadImage() {
@@ -53,10 +53,8 @@ async function uploadImage() {
       method: "POST",
       body: formData
     });
-    const response = await uploadResponse.json();
 
     disableFields(false);
-
     if (uploadResponse.ok) {
       console.log("Upload successful");
       fetchImages()
