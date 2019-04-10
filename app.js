@@ -1,7 +1,10 @@
 const imagesList = document.querySelector("#images-list");
+const uploadField = document.querySelector("#upload-field");
+const submitButton = document.querySelector("#submit");
 
-async function fetchImageURLs() {
-  return fetch("/images").then(data => data.json());
+async function fetchImages() {
+  const imageURLsResponse = await fetch("/images");
+  return imageURLsResponse.json();
 }
 
 function generateImage(src, parentNode) {
@@ -13,12 +16,58 @@ function generateImage(src, parentNode) {
   parentNode.appendChild(imageContainer);
 }
 
-async function generateImageList() {
-  const imageURLs = await fetchImageURLs();
-
-  for (let imageURL of imageURLs) {
-    generateImage(imageURL, imagesList);
+async function generateImageList(imageURLs) {
+  for (let key in imageURLs) {
+    generateImage(imageURLs[key], imagesList);
   }
 }
 
-generateImageList();
+async function memoizeImageList(urls) {
+  let imageURLs = urls;
+  const imageElements = document.querySelectorAll("#images-list img");
+
+  for (let imageElement of imageElements) {
+    if (!imageURLs.includes(imageElement.currentSrc)) {
+      imageElement.remove();
+    } else {
+      imageURLs = imageURLs.filter(url => url !== imageElement.currentSrc);
+    }
+  }
+
+  return imageURLs;
+}
+
+function disableFields(val) {
+  uploadField.setAttribute("disabled", val);
+  submitButton.setAttribute("disabled", val);
+}
+
+async function uploadImage() {
+  const files = uploadField.files;
+  if (files.length) {
+    const formData = new FormData();
+    formData.append("upload", files[0]);
+    disableFields(true);
+
+    const uploadResponse = await fetch("/uploads", {
+      method: "POST",
+      body: formData
+    });
+    const response = await uploadResponse.json();
+
+    disableFields(false);
+
+    if (uploadResponse.ok) {
+      console.log("Upload successful");
+      fetchImages()
+        .then(memoizeImageList)
+        .then(generateImageList);
+    }
+  }
+}
+
+fetchImages()
+  .then(memoizeImageList)
+  .then(generateImageList);
+
+submitButton.addEventListener("click", uploadImage);
