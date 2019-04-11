@@ -57,6 +57,12 @@ html, body {
   width: 200px;
 }
 
+.canvas .block h1 {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 .item {
   border: 1px solid transparent;
   position: absolute;

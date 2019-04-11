@@ -6,6 +6,14 @@ const canvasElement = document.querySelector("#dropzone");
 
 const canvasElements = [];
 
+function addText() {
+  const text = document.createElement("h1");
+  text.innerText = "Text";
+  text.contentEditable = true;
+  
+  canvasElement.appendChild(text);
+}
+
 async function fetchImages() {
   const imageURLsResponse = await fetch("/images");
   return imageURLsResponse.json();
@@ -130,7 +138,8 @@ function mouseUpHandler(e) {
 fetchImages()
   .then(memoizeImageList)
   .then(generateImageList);
-
+  
+addTextButton.addEventListener("click", addText)
 submitButton.addEventListener("click", uploadImage);
 canvasElement.addEventListener("drop", dropHandler);
 canvasElement.addEventListener("dragover", dragOverHandler);
