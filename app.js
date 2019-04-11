@@ -89,6 +89,15 @@ function dragOverHandler(ev) {
   ev.dataTransfer.dropEffect = "copy";
 }
 
+function deleteHandler(e) {
+  if (e.key === "Delete") {
+    if (currentSelectedElm.elm) {
+      currentSelectedElm.elm.remove();
+      currentSelectedElm.elm = null;
+    }
+  }
+}
+
 function dropHandler(e) {
   e.preventDefault();
   const { layerX: x, layerY: y } = e;
@@ -102,6 +111,8 @@ function dropHandler(e) {
     currentSelectedElm.elm = clone;
   }
 }
+
+
 
 let currentDragElm = null;
 let currentSelectedElm = new Proxy({
@@ -173,3 +184,4 @@ canvasElement.addEventListener("drop", dropHandler);
 canvasElement.addEventListener("dragover", dragOverHandler);
 canvasElement.addEventListener("mousedown", mouseDownHandler);
 canvasElement.addEventListener("mouseup", mouseUpHandler);
+document.addEventListener('keydown', deleteHandler);
