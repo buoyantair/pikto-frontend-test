@@ -71,3 +71,7 @@ html, body {
 .item.selected {
   border-color: blue;
 }
+
+.selection {
+  border: 3px solid black;
+}

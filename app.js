@@ -4,7 +4,6 @@ const submitButton = document.querySelector("#submit");
 const addTextButton = document.querySelector("#addText");
 const canvasElement = document.querySelector("#dropzone");
 
-const canvasElements = [];
 
 function addText() {
   const text = document.createElement("h1");
@@ -99,11 +98,35 @@ function dropHandler(e) {
     const clone = document.getElementById(data).cloneNode(true);
     clone.removeAttribute("draggable");
     canvasElement.appendChild(clone);
-    moveElement(clone, x, y)
+    moveElement(clone, x, y);
+    currentSelectedElm.elm = clone;
   }
 }
 
 let currentDragElm = null;
+let currentSelectedElm = new Proxy({
+  elm: null,
+}, {
+  set(obj, prop, val) {
+    if (prop === 'elm') {
+      if (!val instanceof HTMLElement || null) {
+        throw new Error('Can only set selected element to HTMLElement or null');
+      }
+
+      if (obj[prop] instanceof HTMLElement) {
+        obj[prop].classList.remove('selection');
+      }
+
+      if (val instanceof HTMLElement) {
+        val.classList.add('selection');
+      }
+    }
+    obj[prop] = val;
+    return true;
+  }
+});
+
+
 
 function moveElement(element, x, y) {
   if (element) {
@@ -125,8 +148,13 @@ function mouseDownHandler(e) {
   e.preventDefault();
   const isChild = canvasElement.contains(e.target) && e.target !== canvasElement;
   if (isChild) {
+    currentSelectedElm.elm = e.target;
     currentDragElm = e.target;
     canvasElement.addEventListener("mousemove", dragHandler);
+  }
+
+  if (e.target === canvasElement) {
+    currentSelectedElm.elm = null;
   }
 }
 
